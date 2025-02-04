@@ -10,4 +10,5 @@ sudo apt install python3-pip -y<br>
 git clone https://github.com/VictorVasquezZT2005/music-player-local.git<br>
 pip install --break-system-packages -r requirements.txt<br>
 python3 -m pip install --break-system-packages pyinstaller
+sudo apt install python3-tk -y
 pyinstaller --noconsole --onefile --icon=icon.ico music.py
