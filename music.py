@@ -107,6 +107,34 @@ def cambiar_tiempo_manual(valor):
         pygame.mixer.music.set_pos(tiempo_manual)
         actualizar_tiempo_actual(tiempo_manual)
 
+# Función para manejar eventos de teclado
+def manejar_eventos_teclado(event):
+    if event.keysym == "space":
+        reproducir_pausar()
+    elif event.keysym == "Left":
+        cambiar_cancion(-1)
+    elif event.keysym == "Right":
+        cambiar_cancion(1)
+
+# Función para reproducir la siguiente canción automáticamente
+def reproducir_siguiente_cancion():
+    global cancion_actual, reproduciendo
+    if playlist:
+        cancion_actual = (cancion_actual + 1) % len(playlist)
+        pygame.mixer.music.load(playlist[cancion_actual])
+        pygame.mixer.music.play()
+        reproduciendo = True
+        actualizar_boton()
+        resaltar_cancion()
+        actualizar_barra_progreso()
+
+# Función para verificar si la canción ha terminado
+def verificar_fin_cancion():
+    for event in pygame.event.get():
+        if event.type == pygame.USEREVENT:
+            reproducir_siguiente_cancion()
+    ventana.after(100, verificar_fin_cancion)
+
 # Crear ventana
 ventana = tk.Tk()
 ventana.title("Shēngzhí")
@@ -185,6 +213,13 @@ lista_canciones.tag_configure("seleccionada", background="#666666", foreground="
 
 # Cargar música automáticamente al iniciar el programa
 cargar_musica_automaticamente()
+
+# Capturar eventos de teclado
+ventana.bind("<Key>", manejar_eventos_teclado)
+
+# Configurar la reproducción automática de la siguiente canción
+pygame.mixer.music.set_endevent(pygame.USEREVENT)
+ventana.after(100, verificar_fin_cancion)
 
 # Ejecutar ventana
 ventana.mainloop()
