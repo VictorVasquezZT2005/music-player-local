@@ -90,9 +90,10 @@ def resaltar_cancion():
 def actualizar_barra_progreso():
     if reproduciendo:
         tiempo_actual = pygame.mixer.music.get_pos() / 1000  # Obtener el tiempo en segundos
-        barra_progreso["value"] = tiempo_actual
+        if tiempo_actual >= 0:  # Evitar valores negativos
+            barra_progreso["value"] = tiempo_actual
+            actualizar_tiempo_actual(tiempo_actual)
         ventana.after(1000, actualizar_barra_progreso)  # Actualizar cada segundo
-        actualizar_tiempo_actual(tiempo_actual)
 
 # Función para actualizar el tiempo actual de la canción
 def actualizar_tiempo_actual(tiempo_actual):
@@ -139,28 +140,30 @@ def verificar_fin_cancion():
 ventana = tk.Tk()
 ventana.title("Shēngzhí")
 ventana.geometry("900x650")  # Tamaño inicial
-ventana.configure(bg="#181818")  # Fondo oscuro
 
-# Configurar pantalla completa
-ventana.state("zoomed")  # Hace que la ventana inicie maximizada en Windows
-# ventana.attributes('-fullscreen', True)  # Alternativa para pantalla completa sin bordes
+# Aplicar el tema Dracula
+ventana.configure(bg="#282a36")  # Fondo oscuro
 
 # Estilos
 style = ttk.Style()
-style.theme_use('clam')  # Usar un tema más moderno
+style.theme_use('clam')  # Usar un tema base
 
-style.configure("Treeview", font=("Arial", 12), background="#181818", foreground="#FFFFFF", fieldbackground="#181818", rowheight=40)
-style.configure("TButton", font=("Arial", 14), padding=10, background="#444444", foreground="#FFFFFF", relief="flat")
-style.map("TButton", background=[("active", "#666666")])
-style.map("Treeview", background=[("selected", "#666666")])
-style.configure("Treeview.Heading", background="#222222", foreground="#FFFFFF", font=("Arial", 14, "bold"))
+# Configurar colores del tema Dracula
+style.configure("TFrame", background="#282a36", borderwidth=0, relief="flat")
+style.configure("TLabel", background="#282a36", foreground="#f8f8f2", font=("Arial", 12))
+style.configure("TButton", background="#44475a", foreground="#f8f8f2", font=("Arial", 14), padding=10, relief="flat", borderwidth=0)
+style.map("TButton", background=[("active", "#6272a4")])
+style.configure("Treeview", background="#44475a", foreground="#f8f8f2", fieldbackground="#44475a", rowheight=40, font=("Arial", 12), borderwidth=0, relief="flat")
+style.map("Treeview", background=[("selected", "#6272a4")])
+style.configure("Treeview.Heading", background="#6272a4", foreground="#f8f8f2", font=("Arial", 14, "bold"), borderwidth=0, relief="flat")
+style.configure("TScale", background="#44475a", troughcolor="#6272a4", borderwidth=0, relief="flat")
 
 # Lista de canciones con columnas
-frame_lista = tk.Frame(ventana, bg="#181818")
+frame_lista = tk.Frame(ventana, bg="#282a36", borderwidth=0, relief="flat")
 frame_lista.pack(pady=20, fill=tk.BOTH, expand=True)
 
 # Agregar Scrollbar a la lista de canciones
-scrollbar = tk.Scrollbar(frame_lista)
+scrollbar = tk.Scrollbar(frame_lista, bg="#282a36", troughcolor="#44475a", borderwidth=0)
 scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
 lista_canciones = ttk.Treeview(frame_lista, columns=("Nombre", "Duración"), show="headings", selectmode="browse", yscrollcommand=scrollbar.set)
@@ -181,18 +184,25 @@ scrollbar.config(command=lista_canciones.yview)
 lista_canciones.bind("<Double-1>", seleccionar_cancion)
 
 # Barra de progreso
-frame_progreso = tk.Frame(ventana, bg="#181818")
+frame_progreso = tk.Frame(ventana, bg="#282a36", borderwidth=0, relief="flat")
 frame_progreso.pack(pady=10, fill=tk.X)
 
-barra_progreso = ttk.Scale(frame_progreso, from_=0, to=100, orient=tk.HORIZONTAL, command=cambiar_tiempo_manual)
+# Obtener la duración de la canción actual para la barra de progreso
+def obtener_duracion_cancion():
+    if playlist:
+        audio = MP3(playlist[cancion_actual])
+        return int(audio.info.length)
+    return 0
+
+barra_progreso = ttk.Scale(frame_progreso, from_=0, to=obtener_duracion_cancion(), orient=tk.HORIZONTAL, command=cambiar_tiempo_manual)
 barra_progreso.pack(fill=tk.X, padx=20)
 
 # Etiqueta para mostrar el tiempo actual
-etiqueta_tiempo = tk.Label(frame_progreso, text="0:00", bg="#181818", fg="#FFFFFF", font=("Arial", 12))
+etiqueta_tiempo = tk.Label(frame_progreso, text="0:00", bg="#282a36", fg="#f8f8f2", font=("Arial", 12))
 etiqueta_tiempo.pack(pady=5)
 
 # Botones
-frame_botones = tk.Frame(ventana, bg="#181818")
+frame_botones = tk.Frame(ventana, bg="#282a36", borderwidth=0, relief="flat")
 frame_botones.pack(pady=20)
 
 btn_atras = ttk.Button(frame_botones, text="⏮️ Anterior", command=lambda: cambiar_cancion(-1))
@@ -209,7 +219,7 @@ for widget in [btn_atras, btn_reproducir, btn_siguiente]:
     widget.config(width=15)  # Ajuste solo el ancho de los botones
 
 # Personalización de las etiquetas seleccionadas
-lista_canciones.tag_configure("seleccionada", background="#666666", foreground="#FFFFFF")
+lista_canciones.tag_configure("seleccionada", background="#6272a4", foreground="#f8f8f2")
 
 # Cargar música automáticamente al iniciar el programa
 cargar_musica_automaticamente()
