@@ -1,3 +1,5 @@
 pygame
 Pillow
 mutagen
+matplotlib
+numpy
