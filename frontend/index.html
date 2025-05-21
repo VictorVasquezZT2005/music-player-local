@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Shēngzhí</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>🎧 Shēngzhí</h1>
+    </header>
+
+    <main>
+      <aside id="playlist">
+        <ul id="song-list">
+          <!-- Aquí se cargan las canciones dinámicamente -->
+        </ul>
+      </aside>
+
+      <section id="player-section">
+        <div id="current-song-info">
+          <img id="cover" src="placeholder.png" alt="Carátula" />
+          <div class="song-text">
+            <h2 id="song-title">Selecciona una canción</h2>
+            <p id="song-artist">Artista</p>
+            <p id="song-album">Álbum</p>
+          </div>
+        </div>
+        <audio id="player" controls></audio>
+      </section>
+    </main>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
