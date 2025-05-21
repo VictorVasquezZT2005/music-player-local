@@ -5,6 +5,9 @@
   "scripts": {
     "start": "electron ."
   },
+  "dependencies": {
+    "music-metadata": "^7.14.0"
+  },
   "devDependencies": {
     "electron": "^25.0.0"
   }
